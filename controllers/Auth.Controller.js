@@ -15,15 +15,32 @@ const createUser = async (req, res) => {
       unlikes,
     } = req.body;
 
-    // // Check if the username already exists
-    const existUser = await User.findOne({ username });
+    // // Check if the username and email already exists
+    const existingUser = await User.findOne({ $or: [{ username }] });
 
-    if (existUser) {
-      return res
-        .status(400)
-        .json({ error: "Le nom d'utilisateur existe déjà." });
-    }
-
+if (existingUser) {
+      
+  
+if (existingUser.username === username) {
+        
+return res.status(400).
+json({ error: "Le nom d'utilisateur existe déjà." });
+      }
+      
+      }
+      
+// if (existingUser.email === email) {
+        
+// return res.status(400).
+// json({ error: "L'adresse e-mail existe déjà." });
+//       }
+    
+      if (password.length < 6) {
+  return res.status(400).json({ error: "Le mot de passe doit faire au moins 6 caractères." });
+      }
+  
+      
+     
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -47,8 +64,9 @@ const createUser = async (req, res) => {
       .status(201)
       .json({ user: newUser, message: "Utilisateur créé avec succès." });
   } catch (error) {
+    // const errors = signUpErrors(error);
     console.error("Erreur lors de la création d'un utilisateur :", error);
-    return res.status(500).json({ error: "Erreur serveur." });
+    return res.status(500).json({ error: "erreur du serveur" });
   }
 };
 // Vérification du login
@@ -58,11 +76,9 @@ const verifUser = async (req, res) => {
     const { username, password } = req.body;
     const existUser = await User.findOne({ username });
     if (!existUser) {
-      return res
-        .status(400)
-        .json({
-          error: "Le nom d'utilisateur n'existe pas. Veuillez vous inscrire.",
-        });
+      return res.status(400).json({
+        error: "Le nom d'utilisateur n'existe pas. Veuillez vous inscrire.",
+      });
     }
     const isPasswordValid = await bcrypt.compare(password, existUser.password);
     if (!isPasswordValid) {
@@ -80,10 +96,10 @@ const verifUser = async (req, res) => {
     console.error("Erreur lors de la vérification d'admin :", error);
     return res.status(500).json({ error: "Erreur serveur." });
   }
-}
-  const logout = (req,res) => {
-    res.cookie("jwt", " ", { maxAge: 1 });
-    res.redirect("/");
-  };
+};
+const logout = (req, res) => {
+  res.cookie("jwt", " ", { maxAge: 1 });
+  res.redirect("/");
+};
 
 module.exports = { createUser, verifUser, logout };
