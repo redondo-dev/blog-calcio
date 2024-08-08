@@ -15,6 +15,9 @@ const getAllUsers = async (req, res) => {
 //controleur pour recuperer un utilisateur 
 
 const getUserById= async(req, res)=>{
+  if (!mongoose.Types.ObjectId.isValid(User)) {
+    return res.status(400).json({ message: 'Invalid user ID format' });
+  }
 try {
   const userId = req.params.id;
   const user = await User.findById(userId);

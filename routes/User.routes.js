@@ -17,6 +17,9 @@ const {
 } = 
 require('../controllers/UserController');
 
+const uploadController = require('../controllers/upload.controller');
+const multer = require("multer");
+const upload =multer();
 
 const router = express.Router();
 router.post("/register", createUser);
@@ -29,5 +32,7 @@ router.put("/users/:id", updateUserById);
 router.patch("/follow/:id",follow);
 router.patch("/unfollow/:id",unfollow);
 
+//upload photo profil
+router.post("/upload",upload.single('file') ,uploadController.uploadProfil)
 
 module.exports = router;
